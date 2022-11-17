@@ -1,46 +1,49 @@
-import React from 'react'
+import React, { useState } from 'react'
+import CreateTaskBlock from './createTaskBlock'
+import TaskItem from './taskItem'
 
 const Tasks = () => {
-  const taskId = Date.now()
+  const [taskItems, setTaskItems] = useState([
+    { name: 'Create a new task', id: 12345, done: true },
+  ])
+
+  const [formInputValue, setformInputValue] = useState('Watch a JS lesson')
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const inputValue = e.target.taskName.value.trim()
+    const taskId = Date.now()
+    const newTaskItem = { name: inputValue, id: taskId, done: false }
+
+    const newTaskItems = [...taskItems, newTaskItem]
+
+    console.log('newTaskItems after handleSubmit:', newTaskItems)
+    setTaskItems(newTaskItems)
+  }
+
+  const handleTaskCheckboxChange = (taskId) => {
+    const newTaskItems = taskItems.map((item) => ({
+      ...item,
+      done: item.id === taskId ? !item.done : item.done,
+    }))
+
+    console.log('newTaskItems after handleCheckboxChange', newTaskItems)
+    setTaskItems(newTaskItems)
+  }
+
   return (
     <div id="tasks">
       <div className="tasks__wrapper">
-        <form className="create-task-block">
-          <input
-            type="text"
-            className="create-task-block__input default-text-input"
-            name="taskName"
-            placeholder="Create a new task"
-          />
-          <button
-            className="create-task-block__button default-button"
-            type="submit"
-          >
-            Create
-          </button>
-        </form>
+        <CreateTaskBlock inputValue={formInputValue} onSubmit={handleSubmit} />
         <div className="tasks-list">
-          <div className="task-item">
-            <div className="task-item__main-container">
-              <div className="task-item__main-content">
-                <form className="checkbox-form">
-                  <input
-                    type="checkbox"
-                    className="checkbox-form__checkbox"
-                    id={taskId}
-                  />
-                  <label htmlFor={taskId}></label>
-                </form>
-                <span className="task-item__text">Create a new task</span>
-              </div>
-              <button
-                className="task-item__delete-button default-button delete-button"
-                id={taskId}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+          {taskItems.map((item) => (
+            <TaskItem
+              key={item.id}
+              {...item}
+              onChange={() => handleTaskCheckboxChange(item.id)}
+            />
+          ))}
         </div>
       </div>
     </div>
