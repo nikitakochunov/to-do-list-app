@@ -8,7 +8,10 @@ function App() {
     { name: 'Create a new task', id: 12345, done: true },
   ])
 
-  const [formInputValue, setFormInputValue] = useState('Watch a JS lesson')
+  const [formInputValue, setFormInputValue] = useState({
+    text: 'Watch a JS lesson',
+    isValidated: true,
+  })
 
   const [modalHidden, setModalHidden] = useState(true)
 
@@ -17,13 +20,14 @@ function App() {
   const handleInputChange = (e) => {
     const inputValue = e.target.value
 
-    setFormInputValue(inputValue)
+    setFormInputValue({ text: inputValue, isValidated: validate(inputValue) })
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const inputValue = formInputValue
+    const { text: inputValue } = formInputValue
+
     const taskId = Date.now()
     const newTaskItem = { name: inputValue, id: taskId, done: false }
 
@@ -31,7 +35,26 @@ function App() {
 
     console.log('newTaskItems after handleSubmit:', newTaskItems)
     setTaskItems(newTaskItems)
-    setFormInputValue('')
+    setFormInputValue({
+      text: '',
+      isValidated: true,
+    })
+  }
+
+  const validate = (inputValue) => {
+    if (!taskItems.length || !inputValue.length) {
+      return false
+    }
+
+    const isUniqueName = !taskItems.some(
+      (item) => item.name.toLowerCase() === inputValue.toLowerCase()
+    )
+
+    if (!isUniqueName) {
+      return false
+    }
+
+    return true
   }
 
   const handleTaskCheckboxChange = (taskId) => {
