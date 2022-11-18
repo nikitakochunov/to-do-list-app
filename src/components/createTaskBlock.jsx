@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CreateTaskBlock = ({ onSubmit, inputValue, onChange }) => {
+const CreateTaskBlock = ({ inputValue, onSubmit, onInputChange }) => {
   return (
     <form className="create-task-block" onSubmit={onSubmit}>
       <input
@@ -9,7 +9,7 @@ const CreateTaskBlock = ({ onSubmit, inputValue, onChange }) => {
         name="taskName"
         placeholder="Create a new task"
         value={inputValue}
-        onChange={onChange}
+        onChange={onInputChange}
       />
       <button
         className="create-task-block__button default-button"
