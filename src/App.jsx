@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import './App.css'
 import Modal from './components/modal'
 import Tasks from './components/tasks'
-import { deleteExtraSpaces } from './core/utils'
+import { deleteExtraSpaces, fromStorage, toStorage } from './core/utils'
 
 function App() {
-  const [taskItems, setTaskItems] = useState([
-    // { name: 'Create a new task', id: 12345, done: true },
-  ])
+  const initialTaskItems = fromStorage('taskItems') || []
+
+  const [taskItems, setTaskItems] = useState(initialTaskItems)
 
   const [formInputValue, setFormInputValue] = useState({
     text: 'Watch a JS lesson',
@@ -40,6 +40,7 @@ function App() {
     }
 
     const newTaskItems = [...taskItems, newTaskItem]
+    toStorage('taskItems', newTaskItems)
 
     console.log('newTaskItems after handleSubmit:', newTaskItems)
     setTaskItems(newTaskItems)
@@ -75,6 +76,8 @@ function App() {
       return item
     })
 
+    toStorage('taskItems', newTaskItems)
+
     console.log('newTaskItems after handleCheckboxChange', newTaskItems)
     setTaskItems(newTaskItems)
   }
@@ -94,6 +97,8 @@ function App() {
     const newTaskItems = taskItems.filter(
       (item) => item.id !== currentTaskItemId
     )
+
+    toStorage('taskItems', newTaskItems)
 
     setTaskItems(newTaskItems)
     setCurrentTaskItemId(null)
