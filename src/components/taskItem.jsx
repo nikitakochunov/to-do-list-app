@@ -1,6 +1,6 @@
 import React from 'react'
 
-const TaskItem = ({ id, name, done, ...rest }) => {
+const TaskItem = ({ id, name, done, onDelete, ...rest }) => {
   console.log()
   return (
     <div className="task-item">
@@ -21,6 +21,7 @@ const TaskItem = ({ id, name, done, ...rest }) => {
         <button
           className="task-item__delete-button default-button delete-button"
           id={id}
+          onClick={onDelete}
         >
           Delete
         </button>
