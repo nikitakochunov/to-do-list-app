@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import './App.css'
 import Modal from './components/modal'
 import Tasks from './components/tasks'
+import { deleteExtraSpaces } from './core/utils'
 
 function App() {
   const [taskItems, setTaskItems] = useState([
-    { name: 'Create a new task', id: 12345, done: true },
+    // { name: 'Create a new task', id: 12345, done: true },
   ])
 
   const [formInputValue, setFormInputValue] = useState({
@@ -20,7 +21,10 @@ function App() {
   const handleInputChange = (e) => {
     const inputValue = e.target.value
 
-    setFormInputValue({ text: inputValue, isValidated: validate(inputValue) })
+    setFormInputValue({
+      text: inputValue,
+      isValidated: validate(inputValue),
+    })
   }
 
   const handleSubmit = (e) => {
@@ -29,7 +33,11 @@ function App() {
     const { text: inputValue } = formInputValue
 
     const taskId = Date.now()
-    const newTaskItem = { name: inputValue, id: taskId, done: false }
+    const newTaskItem = {
+      name: deleteExtraSpaces(inputValue),
+      id: taskId,
+      done: false,
+    }
 
     const newTaskItems = [...taskItems, newTaskItem]
 
@@ -42,7 +50,9 @@ function App() {
   }
 
   const validate = (inputValue) => {
-    if (!taskItems.length || !inputValue.length) {
+    inputValue = deleteExtraSpaces(inputValue)
+
+    if (!inputValue.length) {
       return false
     }
 
