@@ -1,14 +1,15 @@
 import React from 'react'
 
-const CreateTaskBlock = (props) => {
+const CreateTaskBlock = ({ onSubmit, inputValue, onChange }) => {
   return (
-    <form className="create-task-block" onSubmit={props.onSubmit}>
+    <form className="create-task-block" onSubmit={onSubmit}>
       <input
         type="text"
         className="create-task-block__input default-text-input"
         name="taskName"
         placeholder="Create a new task"
-        defaultValue={props.inputValue}
+        value={inputValue}
+        onChange={onChange}
       />
       <button
         className="create-task-block__button default-button"

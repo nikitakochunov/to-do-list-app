@@ -7,12 +7,12 @@ const Tasks = () => {
     { name: 'Create a new task', id: 12345, done: true },
   ])
 
-  const [formInputValue, setformInputValue] = useState('Watch a JS lesson')
+  const [formInputValue, setFormInputValue] = useState('Watch a JS lesson')
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const inputValue = e.target.taskName.value.trim()
+    const inputValue = formInputValue
     const taskId = Date.now()
     const newTaskItem = { name: inputValue, id: taskId, done: false }
 
@@ -20,22 +20,35 @@ const Tasks = () => {
 
     console.log('newTaskItems after handleSubmit:', newTaskItems)
     setTaskItems(newTaskItems)
+    setFormInputValue('')
   }
 
   const handleTaskCheckboxChange = (taskId) => {
-    const newTaskItems = taskItems.map((item) => ({
-      ...item,
-      done: item.id === taskId ? !item.done : item.done,
-    }))
+    const newTaskItems = taskItems.map((item) => {
+      if (item.id === taskId) {
+        item.done = !item.done
+      }
+      return item
+    })
 
     console.log('newTaskItems after handleCheckboxChange', newTaskItems)
     setTaskItems(newTaskItems)
   }
 
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value
+
+    setFormInputValue(inputValue)
+  }
+
   return (
     <div id="tasks">
       <div className="tasks__wrapper">
-        <CreateTaskBlock inputValue={formInputValue} onSubmit={handleSubmit} />
+        <CreateTaskBlock
+          inputValue={formInputValue}
+          onSubmit={handleSubmit}
+          onChange={handleInputChange}
+        />
         <div className="tasks-list">
           {taskItems.map((item) => (
             <TaskItem
