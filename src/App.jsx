@@ -119,6 +119,14 @@ function App() {
   }
 
   const handleConfirmClick = () => {
+    const inputValue = state.formInputValue.text
+
+    const isValidated = state.taskItems.some(
+      (item) =>
+        item.name === deleteExtraSpaces(inputValue) &&
+        item.id === state.currentTaskItemId
+    )
+
     const newTaskItems = state.taskItems.filter(
       (item) => item.id !== state.currentTaskItemId
     )
@@ -126,6 +134,14 @@ function App() {
     toLocalStorageState('taskItems', newTaskItems)
 
     toLocalStorageState('currentTaskItemId', null)
+
+    if (isValidated) {
+      toLocalStorageState('formInputValue', {
+        text: inputValue,
+        isValidated,
+      })
+    }
+
     handleToggleModal()
   }
 
