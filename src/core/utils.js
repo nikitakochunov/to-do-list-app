@@ -3,7 +3,6 @@ export function deleteExtraSpaces(str) {
 }
 
 export function toStorage(key, value) {
-  console.log(key)
   localStorage.setItem(key, JSON.stringify(value))
 }
 
