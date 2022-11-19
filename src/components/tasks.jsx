@@ -6,13 +6,14 @@ const Tasks = ({
   taskItems,
   onCheckboxChange,
   onDelete,
+  onKeyUp,
   ...rest
   // inputValue,
   // onSubmit,
   // onInputChange,
 }) => {
   return (
-    <div id="tasks">
+    <div id="tasks" onKeyUp={onKeyUp}>
       <div className="tasks__wrapper">
         <CreateTaskBlock
           // inputValue={formInputValue}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
+import DarkAppTheme from './components/darkAppTheme'
 import Modal from './components/modal'
 import Tasks from './components/tasks'
 import { deleteExtraSpaces, fromStorage, toStorage } from './core/utils'
@@ -17,6 +18,8 @@ function App() {
   const [modalHidden, setModalHidden] = useState(true)
 
   const [currentTaskItemId, setCurrentTaskItemId] = useState(null)
+
+  const [darkAppTheme, setDarkAppTheme] = useState(false)
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value
@@ -105,6 +108,12 @@ function App() {
     handleToggleModal()
   }
 
+  const handleKeyUp = (e) => {
+    if (e.key === 'Tab') {
+      setDarkAppTheme((prevState) => !prevState)
+    }
+  }
+
   return (
     <>
       <Tasks
@@ -114,12 +123,14 @@ function App() {
         taskItems={taskItems}
         onCheckboxChange={handleTaskCheckboxChange}
         onDelete={handleTaskDelete}
+        onKeyUp={handleKeyUp}
       />
       <Modal
         isHidden={modalHidden}
         onConfirm={handleConfirmClick}
         onCancel={handleToggleModal}
       />
+      {darkAppTheme && <DarkAppTheme />}
     </>
   )
 }
