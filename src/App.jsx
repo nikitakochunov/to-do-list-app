@@ -19,25 +19,24 @@ function App() {
     darkAppTheme: false,
   }
 
-  const [taskItems, setTaskItems] = useState(initialState.taskItems)
-
-  const [formInputValue, setFormInputValue] = useState(
-    initialState.formInputValue
-  )
-
-  const [modalHidden, setModalHidden] = useState(initialState.modalHidden)
-
-  const [currentTaskItemId, setCurrentTaskItemId] = useState(
-    initialState.currentTaskItemId
-  )
-
-  const [darkAppTheme, setDarkAppTheme] = useState(initialState.darkAppTheme)
+  const [state, setState] = useState(initialState)
 
   const toLocalStorageState = (objKey, value) => {
-    const newStorageState = initialState
-    newStorageState[objKey] = value
+    console.group('objKey:', objKey)
+    console.log('value', value)
+    console.log('prevState', state)
+    console.groupEnd()
 
-    toStorage(LOCAL_STORAGE_KEY, newStorageState)
+    setState((prevState) => {
+      const newState = {
+        ...prevState,
+        [objKey]: value,
+      }
+
+      toStorage(LOCAL_STORAGE_KEY, newState)
+
+      return newState
+    })
   }
 
   const handleInputChange = (e) => {
@@ -47,14 +46,13 @@ function App() {
       isValidated: validate(inputValue),
     }
 
-    setFormInputValue(newInputValue)
     toLocalStorageState('formInputValue', newInputValue)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const { text: inputValue } = formInputValue
+    const { text: inputValue } = state.formInputValue
 
     const taskId = Date.now()
     const newTaskItem = {
@@ -63,16 +61,15 @@ function App() {
       done: false,
     }
 
-    const newTaskItems = [...taskItems, newTaskItem]
+    const newTaskItems = [...state.taskItems, newTaskItem]
 
-    setTaskItems(newTaskItems)
     toLocalStorageState('taskItems', newTaskItems)
 
     const newInputValue = {
       text: '',
       isValidated: true,
     }
-    setFormInputValue(newInputValue)
+
     toLocalStorageState('formInputValue', newInputValue)
   }
 
@@ -83,7 +80,7 @@ function App() {
       return false
     }
 
-    const isUniqueName = !taskItems.some(
+    const isUniqueName = !state.taskItems.some(
       (item) => item.name.toLowerCase() === inputValue.toLowerCase()
     )
 
@@ -95,7 +92,7 @@ function App() {
   }
 
   const handleTaskCheckboxChange = (taskId) => {
-    const newTaskItems = taskItems.map((item) => {
+    const newTaskItems = state.taskItems.map((item) => {
       if (item.id === taskId) {
         item.done = !item.done
       }
@@ -104,58 +101,52 @@ function App() {
 
     console.log('newTaskItems after handleCheckboxChange', newTaskItems)
 
-    setTaskItems(newTaskItems)
     toLocalStorageState('taskItems', newTaskItems)
   }
 
   const handleTaskDelete = (taskId) => {
-    setCurrentTaskItemId(taskId)
     toLocalStorageState('currentTaskItemId', taskId)
     handleToggleModal()
   }
 
   const handleToggleModal = () => {
-    setModalHidden(!modalHidden)
-    toLocalStorageState('modalHidden', !modalHidden)
+    toLocalStorageState('modalHidden', !state.modalHidden)
   }
 
   const handleConfirmClick = () => {
-    const newTaskItems = taskItems.filter(
-      (item) => item.id !== currentTaskItemId
+    const newTaskItems = state.taskItems.filter(
+      (item) => item.id !== state.currentTaskItemId
     )
 
-    setTaskItems(newTaskItems)
     toLocalStorageState('taskItems', newTaskItems)
 
-    setCurrentTaskItemId(null)
     toLocalStorageState('currentTaskItemId', null)
     handleToggleModal()
   }
 
   const handleKeyUp = (e) => {
     if (e.key === 'Tab') {
-      setDarkAppTheme(!darkAppTheme)
-      toLocalStorageState('darkAppTheme', !darkAppTheme)
+      toLocalStorageState('darkAppTheme', !state.darkAppTheme)
     }
   }
 
   return (
     <>
       <Tasks
-        inputValue={formInputValue}
+        inputValue={state.formInputValue}
         onSubmit={handleSubmit}
         onInputChange={handleInputChange}
-        taskItems={taskItems}
+        taskItems={state.taskItems}
         onCheckboxChange={handleTaskCheckboxChange}
         onDelete={handleTaskDelete}
         onKeyUp={handleKeyUp}
       />
       <Modal
-        isHidden={modalHidden}
+        isHidden={state.modalHidden}
         onConfirm={handleConfirmClick}
         onCancel={handleToggleModal}
       />
-      {darkAppTheme && <DarkAppTheme />}
+      {state.darkAppTheme && <DarkAppTheme />}
     </>
   )
 }
