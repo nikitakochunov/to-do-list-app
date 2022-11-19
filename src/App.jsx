@@ -52,7 +52,12 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const { text: inputValue } = state.formInputValue
+    const { text: inputValue, isValidated } = state.formInputValue
+
+    if (!isValidated) {
+      console.log(isValidated)
+      return
+    }
 
     const taskId = Date.now()
     const newTaskItem = {
