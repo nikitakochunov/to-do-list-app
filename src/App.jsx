@@ -6,28 +6,49 @@ import Tasks from './components/tasks'
 import { deleteExtraSpaces, fromStorage, toStorage } from './core/utils'
 
 function App() {
-  const initialTaskItems = fromStorage('taskItems') || []
+  const LOCAL_STORAGE_KEY = 'todolist-state'
 
-  const [taskItems, setTaskItems] = useState(initialTaskItems)
+  const initialState = fromStorage(LOCAL_STORAGE_KEY) || {
+    taskItems: [],
+    formInputValue: {
+      text: 'Watch a JS lesson',
+      isValidated: true,
+    },
+    modalHidden: true,
+    currentTaskItemId: null,
+    darkAppTheme: false,
+  }
 
-  const [formInputValue, setFormInputValue] = useState({
-    text: 'Watch a JS lesson',
-    isValidated: true,
-  })
+  const [taskItems, setTaskItems] = useState(initialState.taskItems)
 
-  const [modalHidden, setModalHidden] = useState(true)
+  const [formInputValue, setFormInputValue] = useState(
+    initialState.formInputValue
+  )
 
-  const [currentTaskItemId, setCurrentTaskItemId] = useState(null)
+  const [modalHidden, setModalHidden] = useState(initialState.modalHidden)
 
-  const [darkAppTheme, setDarkAppTheme] = useState(false)
+  const [currentTaskItemId, setCurrentTaskItemId] = useState(
+    initialState.currentTaskItemId
+  )
+
+  const [darkAppTheme, setDarkAppTheme] = useState(initialState.darkAppTheme)
+
+  const toLocalStorageState = (objKey, value) => {
+    const newStorageState = initialState
+    newStorageState[objKey] = value
+
+    toStorage(LOCAL_STORAGE_KEY, newStorageState)
+  }
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value
-
-    setFormInputValue({
+    const newInputValue = {
       text: inputValue,
       isValidated: validate(inputValue),
-    })
+    }
+
+    setFormInputValue(newInputValue)
+    toLocalStorageState('formInputValue', newInputValue)
   }
 
   const handleSubmit = (e) => {
@@ -43,14 +64,16 @@ function App() {
     }
 
     const newTaskItems = [...taskItems, newTaskItem]
-    toStorage('taskItems', newTaskItems)
 
-    console.log('newTaskItems after handleSubmit:', newTaskItems)
     setTaskItems(newTaskItems)
-    setFormInputValue({
+    toLocalStorageState('taskItems', newTaskItems)
+
+    const newInputValue = {
       text: '',
       isValidated: true,
-    })
+    }
+    setFormInputValue(newInputValue)
+    toLocalStorageState('formInputValue', newInputValue)
   }
 
   const validate = (inputValue) => {
@@ -79,21 +102,21 @@ function App() {
       return item
     })
 
-    toStorage('taskItems', newTaskItems)
-
     console.log('newTaskItems after handleCheckboxChange', newTaskItems)
+
     setTaskItems(newTaskItems)
+    toLocalStorageState('taskItems', newTaskItems)
   }
 
   const handleTaskDelete = (taskId) => {
-    console.log('delete', taskId)
     setCurrentTaskItemId(taskId)
+    toLocalStorageState('currentTaskItemId', taskId)
     handleToggleModal()
   }
 
   const handleToggleModal = () => {
-    console.log('toggle modal')
     setModalHidden(!modalHidden)
+    toLocalStorageState('modalHidden', !modalHidden)
   }
 
   const handleConfirmClick = () => {
@@ -101,16 +124,18 @@ function App() {
       (item) => item.id !== currentTaskItemId
     )
 
-    toStorage('taskItems', newTaskItems)
-
     setTaskItems(newTaskItems)
+    toLocalStorageState('taskItems', newTaskItems)
+
     setCurrentTaskItemId(null)
+    toLocalStorageState('currentTaskItemId', null)
     handleToggleModal()
   }
 
   const handleKeyUp = (e) => {
     if (e.key === 'Tab') {
-      setDarkAppTheme((prevState) => !prevState)
+      setDarkAppTheme(!darkAppTheme)
+      toLocalStorageState('darkAppTheme', !darkAppTheme)
     }
   }
 
