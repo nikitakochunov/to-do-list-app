@@ -3,6 +3,8 @@ import CreateTaskBlock from './createTaskBlock'
 import TaskItem from './taskItem'
 
 const Tasks = ({
+  dateMenu,
+  tasksDateId,
   taskItems,
   onCheckboxChange,
   onDelete,
@@ -12,6 +14,7 @@ const Tasks = ({
   // onSubmit,
   // onInputChange,
 }) => {
+  const areAllTasks = tasksDateId === 'all'
   return (
     <div id="tasks" onKeyUp={onKeyUp}>
       <div className="tasks__wrapper">
@@ -19,17 +22,23 @@ const Tasks = ({
           // inputValue={formInputValue}
           // onSubmit={handleSubmit}
           // onChange={handleInputChange}
+          dateMenu={dateMenu}
           {...rest}
         />
         <div className="tasks-list">
-          {taskItems.map((item) => (
-            <TaskItem
-              key={item.id}
-              {...item}
-              onChange={() => onCheckboxChange(item.id)}
-              onDelete={() => onDelete(item.id)}
-            />
-          ))}
+          {taskItems.map((item) => {
+            if (item.taskDate.id === tasksDateId || areAllTasks) {
+              return (
+                <TaskItem
+                  key={item.id}
+                  {...item}
+                  areAllTasks={areAllTasks}
+                  onChange={() => onCheckboxChange(item.id)}
+                  onDelete={() => onDelete(item.id)}
+                />
+              )
+            }
+          })}
         </div>
       </div>
     </div>

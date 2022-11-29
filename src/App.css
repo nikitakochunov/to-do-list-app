@@ -10,6 +10,14 @@
   --modal-overlay: rgb(84, 103, 145, 0.6);
 }
 
+* {
+  list-style: none;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
 html {
   font-size: 10px;
   line-height: 10px;
@@ -39,8 +47,13 @@ body {
 
 .main-navigation {
   display: flex;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
   background-color: var(--primary-color);
+
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
 }
 
 .main-navigation__button-item {
@@ -53,13 +66,20 @@ body {
   line-height: 2.5rem;
 }
 
-.main-navigation__button-item_selected {
+.main-navigation__button-item.selected {
   box-shadow: inset 0 0 0 4px #fff;
 }
 
 .create-task-block {
   position: relative;
-  
+  margin-bottom: 40px;
+  display: flex;
+  flex-wrap: wrap;
+
+}
+
+.create-task-block__wrapper {
+  flex: 1 1 auto;
 }
 
 .create-task-block__input {
@@ -73,17 +93,56 @@ body {
   font-size: 2rem;
   line-height: 2.5rem;
   height: 40px;
-  width: 50%;
+  width: 90%;
   /* padding: 0; */
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 
 .create-task-block__button {
+  flex: 0 0 30%;
   height: 44px;
 }
 
+.create-task-block__date {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.create-task-block__date div {
+  margin-right: 10px;
+  display: inline;
+  cursor: pointer;
+
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  padding: 5px 20px;
+  border-radius: 5px;
+
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+}
+
+.create-task-block__date ul {
+  display: none;
+}
+
+.create-task-block__date div.active+ul {
+  display: flex;
+}
+
+.create-task-block__date-button {
+  margin-right: 10px;
+}
+
+.create-task-block__date-button.active{
+  background-color: #000;
+}
+
 .create-task-block__button,
-.task-item__delete-button {
+.task-item__delete-button,
+.create-task-block__date-button {
   cursor: pointer;
 
   background-color: var(--primary-color);
@@ -137,6 +196,20 @@ body {
 
 .task-item__text {
   font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+.task-item__date {
+  margin-left: 10px;
+  display: inline;
+
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  padding: 5px 20px;
+  border-radius: 5px;
+
+  font-size: 1.5rem;
   line-height: 2.5rem;
 }
 
@@ -201,9 +274,11 @@ body {
 }
 
 .error-message-block {
-  position: absolute;
-  left: 0;
-  bottom: 0;
+  /* position: absolute; */
+  /* left: 0;
+  bottom: 0; */
+
+  flex: 0 0 100%;
 
   font-size: 1.5rem;
   line-height: 2rem;

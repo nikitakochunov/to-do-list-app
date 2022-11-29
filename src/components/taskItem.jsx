@@ -1,7 +1,17 @@
 import React from 'react'
+import DateButton from './dateButton'
 
-const TaskItem = ({ id, name, done, onDelete, ...rest }) => {
-  console.log()
+const TaskItem = ({
+  id,
+  name,
+  done,
+  onDelete,
+  taskDate,
+  areAllTasks,
+  ...rest
+}) => {
+  const renderTaskDate = areAllTasks && taskDate.id !== 'no-date'
+
   return (
     <div className="task-item">
       <div className="task-item__main-container">
@@ -16,7 +26,14 @@ const TaskItem = ({ id, name, done, onDelete, ...rest }) => {
             />
             <label htmlFor={id}></label>
           </form>
-          <span className="task-item__text">{name}</span>
+          <span className="task-item__text">
+            {name}
+            {renderTaskDate ? (
+              <span className="task-item__date">{taskDate.text}</span>
+            ) : (
+              ''
+            )}
+          </span>
         </div>
         <button
           className="task-item__delete-button default-button delete-button"

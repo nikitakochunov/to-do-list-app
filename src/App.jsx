@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import DarkAppTheme from './components/darkAppTheme'
+import MainNavigation from './components/mainNav'
 import Modal from './components/modal'
 import Tasks from './components/tasks'
 import { deleteExtraSpaces, fromStorage, toStorage } from './core/utils'
@@ -17,9 +18,34 @@ function App() {
     modalHidden: true,
     currentTaskItemId: null,
     darkAppTheme: false,
+    navLinks: [
+      { id: 'all', text: 'All', link: '#tasks-all', selected: true },
+      { id: 'today', text: 'Today', link: '#tasks-today', selected: false },
+      { id: 'week', text: 'Week', link: '#tasks-week', selected: false },
+      { id: 'later', text: 'Later', link: '#tasks-later', selected: false },
+    ],
+    dateMenu: {
+      hidden: true,
+      buttons: [
+        { id: 'today', text: 'Today', active: false },
+        { id: 'week', text: 'Week', active: false },
+        { id: 'later', text: 'Later', active: false },
+      ],
+    },
   }
 
   const [state, setState] = useState(initialState)
+
+  const selectedNavLinkId = state.navLinks.find((link) => link.selected).id
+
+  const handleNavLinkClick = (linkId) => {
+    const newLinks = state.navLinks.map((link) => ({
+      ...link,
+      selected: link.id === linkId,
+    }))
+
+    toLocalStorageState('navLinks', newLinks)
+  }
 
   const toLocalStorageState = (objKey, value) => {
     console.group('objKey:', objKey)
@@ -60,10 +86,19 @@ function App() {
     }
 
     const taskId = Date.now()
+    // const taskDate = state.navLinks.find((link) => link.selected).id
+    const activeDateButton = state.dateMenu.buttons.find((date) => date.active)
+
+    const taskDate = {
+      text: activeDateButton?.text || 'No date',
+      id: activeDateButton?.id || 'no-date',
+    }
+
     const newTaskItem = {
       name: deleteExtraSpaces(inputValue),
       id: taskId,
       done: false,
+      taskDate,
     }
 
     const newTaskItems = [...state.taskItems, newTaskItem]
@@ -76,6 +111,45 @@ function App() {
     }
 
     toLocalStorageState('formInputValue', newInputValue)
+
+    const newDateMenu = {
+      hidden: true,
+      buttons: state.dateMenu.buttons.map((date) => ({
+        ...date,
+        active: false,
+      })),
+    }
+
+    toLocalStorageState('dateMenu', newDateMenu)
+  }
+
+  const handleDateButtonClick = (dateId) => {
+    const newDateMenu = {
+      hidden: state.dateMenu.hidden,
+      buttons: state.dateMenu.buttons.map((btn) => {
+        if (btn.id === dateId) {
+          return {
+            ...btn,
+            active: !btn.active,
+          }
+        }
+        return {
+          ...btn,
+          active: false,
+        }
+      }),
+    }
+
+    toLocalStorageState('dateMenu', newDateMenu)
+  }
+
+  const handleToggleDateMenu = () => {
+    const newDateMenu = {
+      ...state.dateMenu,
+      hidden: !state.dateMenu.hidden,
+    }
+
+    toLocalStorageState('dateMenu', newDateMenu)
   }
 
   const validate = (inputValue) => {
@@ -153,7 +227,15 @@ function App() {
 
   return (
     <>
+      <MainNavigation
+        navLinks={state.navLinks}
+        onNavLinkClick={handleNavLinkClick}
+      />
       <Tasks
+        dateMenu={state.dateMenu}
+        onDateMenuClick={handleToggleDateMenu}
+        onDateButtonClick={handleDateButtonClick}
+        tasksDateId={selectedNavLinkId}
         inputValue={state.formInputValue}
         onSubmit={handleSubmit}
         onInputChange={handleInputChange}
